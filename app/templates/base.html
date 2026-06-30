@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Ticketing{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav">
+      <a class="brand" href="{{ url_for('web.all_tickets') }}">🎫 Tickets</a>
+      <a href="{{ url_for('web.all_tickets') }}">All</a>
+      <a href="{{ url_for('web.my_tickets') }}">Assigned to me</a>
+      <a href="{{ url_for('web.my_open_tickets') }}">Open &amp; mine</a>
+    </nav>
+    <div class="userpicker">
+      <label for="user-select">You:</label>
+      <select id="user-select">
+        <option value="">— pick your name —</option>
+        {% for member in team_members %}
+        <option value="{{ member }}">{{ member }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
