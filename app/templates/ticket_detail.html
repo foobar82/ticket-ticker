@@ -7,17 +7,24 @@
 
   <h1>#{{ ticket.id }} — {{ ticket.title }}</h1>
 
-  {# Read-only view for now; interactive status/assign/comment controls are
-     added in the next slice. #}
   <div class="meta">
     <div class="meta-row">
-      <label>Status</label>
-      <span class="badge">{{ ticket.status }}</span>
+      <label for="status-select">Status</label>
+      <select id="status-select">
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if s == ticket.status %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <span id="status-feedback" class="feedback"></span>
     </div>
+
     <div class="meta-row">
       <label>Assignee</label>
-      <span>{{ ticket.assignee or "Unassigned" }}</span>
+      <span id="assignee-label">{{ ticket.assignee or "Unassigned" }}</span>
+      <button id="assign-btn" type="button">Assign to me</button>
+      <button id="unassign-btn" type="button" {% if not ticket.assignee %}hidden{% endif %}>Unassign</button>
     </div>
+
     {% if ticket.slack_permalink %}
     <div class="meta-row">
       <label>Slack</label>
@@ -44,6 +51,18 @@
       <li id="no-comments" class="muted">No comments yet.</li>
       {% endfor %}
     </ul>
+
+    <form id="comment-form">
+      <textarea id="comment-body" rows="3" placeholder="Add a comment…" required></textarea>
+      <div class="form-row">
+        <span id="comment-feedback" class="feedback"></span>
+        <button type="submit">Add comment</button>
+      </div>
+    </form>
   </section>
 </article>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='detail.js') }}"></script>
 {% endblock %}
