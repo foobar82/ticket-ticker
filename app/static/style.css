@@ -1,0 +1,100 @@
+/* Boring, readable styling. No framework (spec §5). */
+:root {
+  --bg: #f7f8fa;
+  --fg: #1c2530;
+  --muted: #6b7785;
+  --border: #dde2e8;
+  --accent: #2f6fed;
+  --todo: #6b7785;
+  --progress: #b8860b;
+  --closed: #2e8b57;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.nav { display: flex; gap: 1rem; align-items: center; }
+.nav a { color: var(--fg); text-decoration: none; padding: 0.2rem 0; }
+.nav a:hover { color: var(--accent); }
+.nav .brand { font-weight: 700; }
+
+.userpicker { display: flex; align-items: center; gap: 0.4rem; }
+.userpicker label { color: var(--muted); font-size: 0.9rem; }
+
+.container { max-width: 960px; margin: 1.5rem auto; padding: 0 1.2rem; }
+
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+
+.hint { color: var(--muted); background: #fff; border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem; border-radius: 6px; }
+.muted { color: var(--muted); }
+
+/* --- List table --- */
+table.tickets { width: 100%; border-collapse: collapse; background: #fff;
+  border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+table.tickets th, table.tickets td {
+  text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border);
+  font-size: 0.92rem; }
+table.tickets th { background: #fafbfc; color: var(--muted); font-weight: 600; }
+table.tickets tbody tr { cursor: pointer; }
+table.tickets tbody tr:hover { background: #f0f5ff; }
+.col-id { width: 3rem; }
+.col-status { width: 8rem; }
+.col-assignee { width: 9rem; }
+.col-updated { width: 12rem; color: var(--muted); }
+
+.badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px;
+  font-size: 0.8rem; border: 1px solid var(--border); }
+.status-todo { color: var(--todo); }
+.status-progress { color: var(--progress); }
+.status-closed { color: var(--closed); }
+
+/* --- Detail --- */
+.ticket-detail .meta { background: #fff; border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.8rem 1rem; margin: 1rem 0; }
+.meta-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; flex-wrap: wrap; }
+.meta-row label { width: 6rem; color: var(--muted); font-size: 0.9rem; }
+
+.desc-text { white-space: pre-wrap; background: #fff; border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.8rem 1rem; font-family: inherit; margin: 0; }
+
+button { background: var(--accent); color: #fff; border: none; border-radius: 5px;
+  padding: 0.35rem 0.8rem; cursor: pointer; font-size: 0.9rem; }
+button:hover { filter: brightness(1.05); }
+button:disabled { background: var(--muted); cursor: default; }
+
+select, textarea, input { font-family: inherit; font-size: 0.9rem;
+  border: 1px solid var(--border); border-radius: 5px; padding: 0.3rem 0.5rem; }
+textarea { width: 100%; resize: vertical; }
+
+.feedback { font-size: 0.85rem; }
+.feedback.ok { color: var(--closed); }
+.feedback.err { color: #c0392b; }
+
+ul#comment-list { list-style: none; padding: 0; }
+ul#comment-list li { background: #fff; border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; }
+.comment-author { font-weight: 600; }
+.comment-time { color: var(--muted); font-size: 0.8rem; margin-left: 0.4rem; }
+.comment-body { margin-top: 0.3rem; white-space: pre-wrap; }
+
+#comment-form { margin-top: 0.8rem; }
+.form-row { display: flex; justify-content: space-between; align-items: center;
+  margin-top: 0.4rem; }

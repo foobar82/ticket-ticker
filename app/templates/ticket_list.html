@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ view_title }} — Tickets{% endblock %}
+
+{% block content %}
+<h1>{{ view_title }}</h1>
+
+<p id="list-hint" class="hint" hidden>
+  Pick your name (top right) to see tickets assigned to you.
+</p>
+
+<table class="tickets" id="tickets-table">
+  <thead>
+    <tr>
+      <th class="col-id">#</th>
+      <th>Title</th>
+      <th class="col-status">Status</th>
+      <th class="col-assignee">Assignee</th>
+      <th class="col-updated">Updated</th>
+    </tr>
+  </thead>
+  <tbody id="tickets-body">
+    <tr><td colspan="5" class="muted">Loading…</td></tr>
+  </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // The view is fixed per-page; the current user comes from the name picker.
+  window.TICKET_VIEW = {{ view | tojson }};
+</script>
+<script src="{{ url_for('static', filename='list.js') }}"></script>
+{% endblock %}
