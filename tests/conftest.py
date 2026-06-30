@@ -10,6 +10,12 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     TESTING = True
     TEAM_MEMBERS = ["Henry", "Raj", "Priya"]
+    # No Slack creds -> Slack features stay disabled (no /slack/events route,
+    # no outbound calls). The Slack logic is exercised with a fake client.
+    SLACK_BOT_TOKEN = None
+    SLACK_SIGNING_SECRET = None
+    SLACK_TICKET_CHANNEL_ID = "C_TEST"
+    BASE_URL = "http://testhost"
 
 
 @pytest.fixture

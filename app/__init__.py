@@ -1,7 +1,8 @@
 """Flask application factory (spec §10).
 
-Wires up the database, the server-rendered web pages, and the read side of the
-JSON API. Mutating endpoints and the Slack bot are layered on later.
+Wires up the database, the server-rendered web pages, the JSON API, and --
+when Slack credentials are present -- the Slack Bolt event endpoint at
+/slack/events.
 """
 import logging
 
@@ -32,9 +33,29 @@ def create_app(config=None):
     app.register_blueprint(web_bp)
     app.register_blueprint(api_bp)
 
+    _register_slack(app, config)
     _register_errorhandlers(app)
 
     return app
+
+
+def _register_slack(app, config):
+    """Mount the Bolt events endpoint behind Flask, if Slack is configured."""
+    from app.slack.bot import build_bolt_app
+
+    bolt = build_bolt_app(app)
+    if bolt is None:
+        return
+
+    from slack_bolt.adapter.flask import SlackRequestHandler
+
+    handler = SlackRequestHandler(bolt)
+
+    @app.post("/slack/events")
+    def slack_events():
+        return handler.handle(request)
+
+    app.logger.info("Slack events endpoint mounted at /slack/events")
 
 
 def _register_errorhandlers(app):
