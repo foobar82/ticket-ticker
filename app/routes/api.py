@@ -2,13 +2,12 @@
 
 Read + mutating endpoints. No auth (§3/§4): the `user`/`author` value is
 supplied by the client's name picker and is a convenience, not a boundary.
-
-NOTE: status changes will additionally be mirrored back to Slack (§6.3) once
-the Slack bot slice lands; that hook is wired into `patch_ticket` then.
+Status changes are mirrored back to the Slack thread (§6.3).
 """
 from flask import Blueprint, current_app, jsonify, request
 
 from app import services
+from app.slack.bot import get_web_client, sync_status_to_slack
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -53,7 +52,7 @@ def patch_ticket(ticket_id):
     assignee = payload["assignee"] if "assignee" in payload else None
 
     try:
-        ticket, _status_changed = services.update_ticket(
+        ticket, status_changed = services.update_ticket(
             ticket,
             status=status,
             assignee=assignee,
@@ -61,6 +60,12 @@ def patch_ticket(ticket_id):
         )
     except services.ValidationError as exc:
         return jsonify(error=str(exc)), 400
+
+    # Mirror status changes back to the Slack thread (§6.3). Best-effort:
+    # never let a Slack hiccup fail the web request.
+    if status_changed:
+        client = get_web_client(config)
+        sync_status_to_slack(ticket, client, config.BASE_URL)
 
     return jsonify(ticket=ticket.to_dict(include_comments=True))
 
