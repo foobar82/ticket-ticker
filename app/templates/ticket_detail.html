@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.id }} — {{ ticket.title }}{% endblock %}
+
+{% block content %}
+<article class="ticket-detail" data-ticket-id="{{ ticket.id }}">
+  <p><a href="{{ url_for('web.all_tickets') }}">&larr; All tickets</a></p>
+
+  <h1>#{{ ticket.id }} — {{ ticket.title }}</h1>
+
+  <div class="meta">
+    <div class="meta-row">
+      <label for="status-select">Status</label>
+      <select id="status-select">
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if s == ticket.status %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <span id="status-feedback" class="feedback"></span>
+    </div>
+
+    <div class="meta-row">
+      <label>Assignee</label>
+      <span id="assignee-label">{{ ticket.assignee or "Unassigned" }}</span>
+      <button id="assign-btn" type="button">Assign to me</button>
+      <button id="unassign-btn" type="button" {% if not ticket.assignee %}hidden{% endif %}>Unassign</button>
+    </div>
+
+    {% if ticket.slack_permalink %}
+    <div class="meta-row">
+      <label>Slack</label>
+      <a href="{{ ticket.slack_permalink }}" target="_blank" rel="noopener">View original message ↗</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <section class="description">
+    <h2>Description</h2>
+    <pre class="desc-text">{{ ticket.description }}</pre>
+  </section>
+
+  <section class="comments">
+    <h2>Comments</h2>
+    <ul id="comment-list">
+      {% for c in ticket.comments %}
+      <li>
+        <span class="comment-author">{{ c.author }}</span>
+        <span class="comment-time">{{ c.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+        <div class="comment-body">{{ c.body }}</div>
+      </li>
+      {% else %}
+      <li id="no-comments" class="muted">No comments yet.</li>
+      {% endfor %}
+    </ul>
+
+    <form id="comment-form">
+      <textarea id="comment-body" rows="3" placeholder="Add a comment…" required></textarea>
+      <div class="form-row">
+        <span id="comment-feedback" class="feedback"></span>
+        <button type="submit">Add comment</button>
+      </div>
+    </form>
+  </section>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='detail.js') }}"></script>
+{% endblock %}
