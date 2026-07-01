@@ -50,8 +50,11 @@ def ticket_detail(ticket_id):
     ticket = services.get_ticket_or_none(ticket_id)
     if ticket is None:
         abort(404)
+    from app.models import STATUSES
+
     return render_template(
         "ticket_detail.html",
         ticket=ticket,
+        statuses=STATUSES,
         team_members=_team_members(),
     )

@@ -4,19 +4,21 @@ A rudimentary ticketing/workflow tool for a small financing & compliance team.
 Tickets are created from a dedicated Slack channel and managed via a simple
 internal web UI. **Prototype** — no auth, single team, internally hosted.
 
-> Build progress: scaffold + data model, and now the **read-only web UI**.
-> Mutations (status/assign/comments) and the Slack bot follow in later slices
-> (spec build order §12).
+> Build progress: scaffold + data model, the read-only web UI, and now the
+> **interactive web UI** (status / self-assign / comments). The Slack bot
+> follows in the final slice (spec build order §12).
 
 ## What works so far
 
 - SQLAlchemy `Ticket` + `Comment` models (spec §8).
 - Three web views (spec §7.1): **All** (`/`), **Assigned to me** (`/mine`),
   **Open & assigned to me** (`/mine/open`).
-- Ticket detail page (`/tickets/<id>`) — read-only for now.
-- Read JSON API: `GET /api/tickets?view=…&user=…` and `GET /api/tickets/<id>`.
+- Ticket detail page (`/tickets/<id>`): change status, self-assign / unassign,
+  and add comments — all via `fetch()` against the API, no full reload.
+- JSON API: list, detail, `PATCH` status/assignee, and add comment.
 - localStorage name picker in the header (spec §4/§7.3): a convenience for
-  "assigned to me" filtering, **not** a security boundary.
+  "assigned to me" filtering and as the comment/assign actor, **not** a
+  security boundary.
 
 ## Architecture
 
@@ -52,5 +54,7 @@ Copy `.env.example` to `.env`:
 |---|---|---|
 | GET | `/api/tickets?view=all\|mine\|mine_open&user=<name>` | List tickets |
 | GET | `/api/tickets/<id>` | Ticket detail incl. comments |
+| PATCH | `/api/tickets/<id>` | Update status and/or assignee |
+| POST | `/api/tickets/<id>/comments` | Add a comment |
 
-Mutating endpoints and the Slack `POST /slack/events` endpoint are added later.
+The Slack `POST /slack/events` endpoint is added in the final slice.
