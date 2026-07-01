@@ -4,29 +4,38 @@ A rudimentary ticketing/workflow tool for a small financing & compliance team.
 Tickets are created from a dedicated Slack channel and managed via a simple
 internal web UI. **Prototype** — no auth, single team, internally hosted.
 
-> This is the first slice of the build: project scaffold + data model. The
-> web UI, JSON API, and Slack bot are added in follow-up changes (see the
-> build order in spec §12).
+> Build progress: scaffold + data model, and now the **read-only web UI**.
+> Mutations (status/assign/comments) and the Slack bot follow in later slices
+> (spec build order §12).
 
-## This slice
+## What works so far
 
-- Flask application factory (`app/__init__.py`) wiring up the database.
-- SQLAlchemy models (`app/models.py`): `Ticket` and `Comment` (spec §8).
-- A seed script for sample data so later UI work has something to render.
+- SQLAlchemy `Ticket` + `Comment` models (spec §8).
+- Three web views (spec §7.1): **All** (`/`), **Assigned to me** (`/mine`),
+  **Open & assigned to me** (`/mine/open`).
+- Ticket detail page (`/tickets/<id>`) — read-only for now.
+- Read JSON API: `GET /api/tickets?view=…&user=…` and `GET /api/tickets/<id>`.
+- localStorage name picker in the header (spec §4/§7.3): a convenience for
+  "assigned to me" filtering, **not** a security boundary.
 
-The three v1 statuses (**To Do → In Progress → Closed**, Closed terminal) and
-the `slack_message_ts` uniqueness constraint that will prevent double-creation
-are already modelled. Deferred v2 work is flagged with `v2 HOOK` comments.
+## Architecture
+
+- **Backend:** Python + Flask (app factory in `app/__init__.py`).
+- **DB:** SQLite via Flask-SQLAlchemy (`app/models.py`).
+- **Frontend:** server-rendered Jinja2 + a little vanilla JS (`app/static/`).
+  List rows are loaded client-side from the API so the "mine" views can use the
+  localStorage name picker without the server knowing the current user.
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
-python seed.py        # create tables + sample tickets
+python seed.py        # optional: sample tickets
+python run.py         # http://localhost:5000  (added with the run entrypoint)
 python -m pytest      # run the tests
 ```
 
-The DB tables are created automatically on first `create_app()`.
+The DB tables are created automatically on first boot.
 
 ## Configuration
 
@@ -35,9 +44,13 @@ Copy `.env.example` to `.env`:
 | Variable | Purpose |
 |---|---|
 | `DATABASE_URL` | SQLAlchemy URL (defaults to a local SQLite file) |
-| `TEAM_MEMBERS` | Comma-separated roster for the (upcoming) name picker |
+| `TEAM_MEMBERS` | Comma-separated roster for the name picker |
 
-## Identity model (no auth)
+## API (so far)
 
-There is no login (spec §3/§4). A later slice adds a name picker whose value is
-a convenience for "assigned to me" filtering, **not** a security boundary.
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/tickets?view=all\|mine\|mine_open&user=<name>` | List tickets |
+| GET | `/api/tickets/<id>` | Ticket detail incl. comments |
+
+Mutating endpoints and the Slack `POST /slack/events` endpoint are added later.
